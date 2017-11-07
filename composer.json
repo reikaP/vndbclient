@@ -3,8 +3,7 @@
     "description": "VNDB PHP Client for Laravel",
     "type": "library",
     "require": {
-        "symfony/console": "^3.3",
-        "ocramius/generated-hydrator": "^2.1"
+        "symfony/console": "^3.3"
     },
     "license": "MIT",
     "autoload": {
