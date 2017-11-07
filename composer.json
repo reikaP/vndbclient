@@ -1,0 +1,30 @@
+{
+    "name": "shikakunhq/vndbclient",
+    "description": "VNDB PHP Client for Laravel",
+    "type": "library",
+    "require": {
+        "symfony/console": "^3.3",
+        "ocramius/generated-hydrator": "^2.1"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Shikakunhq\\VNDBClient\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Shikakunhq\\VNDBClient\\VNDBServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "Yodd",
+            "email": "kao@shikakun.moe"
+        }
+    ]
+
+}
