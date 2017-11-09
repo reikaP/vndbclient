@@ -1,6 +1,6 @@
 ## VNDB PHP Client for Laravel
 
-#### Configuration
+### Configuration
 
 Add the package to project dependencies
 
@@ -17,7 +17,7 @@ Pull configuration from vendor. Then config will goes to `` config/vndb.php``
 
 
 
-#### Basic Usage
+### Basic Usage
 
 ##### Retrieving information
 
