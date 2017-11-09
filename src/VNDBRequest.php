@@ -20,7 +20,7 @@ class VNDBRequest
     {
         $vn = self::vn($title)->data['items']['0'];
         $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
-        $array = array(
+        $array = (object)array(
             'id' => $vn['id'],
             'producer_id' => $publisher['id'],
             'title' => $vn['title'],
