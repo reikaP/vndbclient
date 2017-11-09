@@ -1,13 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: axlyo
- * Date: 11/7/2017
- * Time: 3:19 PM
- */
 
 namespace Shikakunhq\VNDBClient\lib;
 
+/**
+ * Class Client
+ * @package Shikakunhq\VNDBClient\lib
+ */
 class Client
 {
     public $fp;
@@ -16,6 +14,9 @@ class Client
     {
     }
 
+    /**
+     * @return bool
+     */
     public function isConnected()
     {
         if ($this->fp) {
@@ -23,7 +24,6 @@ class Client
         }
         return false;
     }
-
     public function connect()
     {
         $this->fp = fsockopen("api.vndb.org", 19534, $errno, $errstr, 10);
@@ -33,6 +33,10 @@ class Client
         }
     }
 
+    /**
+     * @param $username
+     * @param $password
+     */
     public function login($username, $password)
     {
         $data = array(
@@ -50,6 +54,11 @@ class Client
         }
     }
 
+    /**
+     * @param $command
+     * @param null $data
+     * @return Response
+     */
     public function sendCommand($command, $data = null)
     {
         $packet = $command;
@@ -67,7 +76,8 @@ class Client
         } else {
             $p = strpos($res, '{');
             if ($p>0) {
-
+                $type = substr($res, 0, $p - 1);
+                $response->setType($type);
                 $json = substr($res, $p);
                 $data = json_decode($json, true);
                 $response->setData($data);
