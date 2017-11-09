@@ -19,7 +19,7 @@ class VNDBRequest
         try {
             $vn = self::vn($title)->data['items']['0'];
             $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
-            $array = (object)array(
+            $result = (object)array(
                 'id' => $vn['id'],
                 'producer_id' => $publisher['id'],
                 'title' => $vn['title'],
@@ -34,7 +34,7 @@ class VNDBRequest
         } catch (\ErrorException $e) {
             $vn = self::vn2nd($title)->data['items']['0'];
             $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
-            $array = (object)array(
+            $result = (object)array(
                 'id' => $vn['id'],
                 'producer_id' => $publisher['id'],
                 'title' => $vn['title'],
@@ -47,7 +47,7 @@ class VNDBRequest
                 'image_nsfw' => $vn['image_nsfw'],
             );
         }
-        return $array;
+        return $result;
     }
 
     public static function producerById($producer)
