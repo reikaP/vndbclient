@@ -1,36 +1,53 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: axlyo
- * Date: 11/7/2017
- * Time: 3:00 PM
- */
 
 namespace Shikakunhq\VNDBClient;
 
-use Illuminate\Support\Facades\Facade;
 use Shikakunhq\VNDBClient\lib\Client;
 
 
-class VNDBRequest extends Facade
+class VNDBRequest
 {
 
-    public static function getVN($title) {
-        $request = new Client();
-        $request->connect();
-        $request->login(config('vndb.username'),config('vndb.password'));
-        $data1 = $request->sendCommand('get vn basic,details (title="'. $title .'")');
-        $new1 = new \ReflectionObject($data1);
-        $rep1 = $new1->getProperty('data');
-        $rep1->setAccessible(TRUE);
-        $decode1 = $rep1->getValue($data1);
-        $data2 = $request->sendCommand('get release basic,producers (vn="' . $decode1['items'][0]['id'] . '")');
-        $new2 = new \ReflectionObject($data2);
-        $rep2 = $new2->getProperty('data');
-        $rep2->setAccessible(TRUE);
-        $decode2 = $rep2->getValue($data2);
-        return array($decode1,$decode2);
+    private static function client()
+    {
+        $connect = new Client();
+        $connect->connect();
+        $connect->login(config('vndb.username'), config('vndb.password'));
+        return $connect;
+    }
 
+    public static function getInfo($title)
+    {
+        $vn = self::vn($title)->data['items']['0'];
+        $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
+        $array = array(
+            'id' => $vn['id'],
+            'producer_id' => $publisher['id'],
+            'title' => $vn['title'],
+            'producer' => $publisher['name'],
+            'original' => $vn['original'],
+            'aliases' => $vn['aliases'],
+            'released' => $vn['released'],
+            'description' => $vn['description'],
+            'image' => $vn['image'],
+            'image_nsfw' => $vn['image_nsfw'],
+        );
+        return $array;
+    }
+
+    public static function producerById($producer)
+    {
+        return self::client()->sendCommand('get release producers (vn="' . $producer . '")');
+    }
+
+    public static function vn($title)
+    {
+        return self::client()->sendCommand('get vn basic,details (title="' . $title . '")');
+    }
+
+    public static function command($command)
+    {
+        return self::client()->sendCommand($command);
     }
 
 

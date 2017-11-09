@@ -16,8 +16,8 @@ class VNDBServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/config/vndb.php' => config_path('vndb.php'),
-        ]);
+            __DIR__ . '/../config/vndb.php' => config_path('vndb.php')
+        ], 'vndb');
     }
 
     /**

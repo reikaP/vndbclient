@@ -10,7 +10,7 @@ namespace Shikakunhq\VNDBClient\lib;
 
 class Client
 {
-    private $fp;
+    public $fp;
 
     public function __construct()
     {
@@ -67,8 +67,6 @@ class Client
         } else {
             $p = strpos($res, '{');
             if ($p>0) {
-                $type = substr($res, 0, $p - 1);
-                $response->setType($type);
 
                 $json = substr($res, $p);
                 $data = json_decode($json, true);

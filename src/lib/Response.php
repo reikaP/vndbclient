@@ -4,8 +4,9 @@ namespace Shikakunhq\VNDBClient\lib;
 
 class Response
 {
-    private $type;
-    private $data;
+    public $type;
+    public $data;
+
 
     public function getType()
     {
@@ -24,5 +25,6 @@ class Response
     {
         return $this->data;
     }
+
 
 }
