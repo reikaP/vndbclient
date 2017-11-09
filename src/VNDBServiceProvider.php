@@ -1,8 +1,6 @@
 <?php
 
 namespace Shikakunhq\VNDBClient;
-
-
 use Illuminate\Support\ServiceProvider;
 
 

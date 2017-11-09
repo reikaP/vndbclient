@@ -16,7 +16,6 @@ class Response
     {
         $this->type = $type;
     }
-
     public function setData($data)
     {
         $this->data = $data;
