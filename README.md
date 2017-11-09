@@ -1,4 +1,4 @@
-### VNDB PHP Client for Laravel
+## VNDB PHP Client for Laravel
 
 #### Configuration
 
