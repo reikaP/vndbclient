@@ -4,7 +4,7 @@
 
 Add the package to project dependencies
 
-`` composer require shikakunhq/vndbclient``
+`` composer require shikakunhq/vndbclient:dev-master``
 
 Register the provider in ``config/app.php``
 
