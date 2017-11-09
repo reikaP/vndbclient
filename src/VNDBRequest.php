@@ -16,8 +16,6 @@ class VNDBRequest
 
     public static function getInfo($title)
     {
-
-        $title = '××× na Kanojo ga Inaka Seikatsu o Mankitsu Suru Himitsu no Houhou';
         try {
             $vn = self::vn($title)->data['items']['0'];
             $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
