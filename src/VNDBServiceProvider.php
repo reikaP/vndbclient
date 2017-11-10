@@ -15,7 +15,7 @@ class VNDBServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/vndb.php' => config_path('vndb.php')
-        ], 'vndb');
+        ], 'config');
     }
 
     /**
