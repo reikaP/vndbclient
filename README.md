@@ -12,7 +12,7 @@ Register the provider in ``config/app.php``
 
 Pull configuration from vendor. Then config will goes to `` config/vndb.php``
 
-`` php artisan vendor:publish --tag=vndb ``
+`` php artisan vendor:publish --provider="Shikakunhq\VNDBClient\VNDBServiceProvider" --tag="config" ``
 
 
 
@@ -27,6 +27,7 @@ dd(VNDBRequest::getInfo('Wagamama High Spec'));
 ```
 
 Result
+
 ```
 array:10 [▼
   "id" => 17823
