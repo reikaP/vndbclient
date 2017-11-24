@@ -49,9 +49,7 @@ class VNDBRequest
                 );
 
             } catch (\ErrorException $e) {
-
-                echo "... not found";
-                exit();
+                return null;
             }
         }
         return $result;
@@ -75,8 +73,7 @@ class VNDBRequest
                 'image_nsfw' => $vn['image_nsfw'],
             );
         } catch (\ErrorException $e) {
-            echo "... not found";
-            exit();
+            return null;
         }
         return $result;
     }
