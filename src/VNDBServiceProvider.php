@@ -1,8 +1,8 @@
 <?php
 
 namespace Shikakunhq\VNDBClient;
-use Illuminate\Support\ServiceProvider;
 
+use Illuminate\Support\ServiceProvider;
 
 class VNDBServiceProvider extends ServiceProvider
 {
@@ -14,7 +14,7 @@ class VNDBServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../config/vndb.php' => config_path('vndb.php')
+            __DIR__.'/../config/vndb.php' => config_path('vndb.php'),
         ], 'config');
     }
 
