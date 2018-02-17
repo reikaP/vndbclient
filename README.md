@@ -58,7 +58,11 @@ array:10 [▼
 
 ```php
 use Shikakunhq\VNDBClient\VNDBRequest;
-dd(VNDBRequest::command('get vn basic,details (title="Wagamama High Spec")');
+class HomeController {
+  public function index() {
+    dd(VNDBRequest::command('get vn basic,details (title="Wagamama High Spec")');
+  }
+}
 ```
 
 Visit [API Documentation](https://vndb.org/d11) for more usage
