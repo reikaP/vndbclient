@@ -23,7 +23,7 @@ Pull configuration from vendor. Then config will goes to `` config/vndb.php``
 
 ```php
 use Shikakunhq\VNDBClient\VNDBRequest;
-class Home {
+class HomeController {
   public function index() {
     dd(VNDBRequest::getInfo('Wagamama High Spec'));
   }
