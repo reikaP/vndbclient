@@ -11,88 +11,7 @@ class VNDBRequest
         $connect = new Client();
         $connect->connect();
         $connect->login(config('vndb.username'), config('vndb.password'));
-
         return $connect;
-    }
-
-    public static function getInfo($title)
-    {
-        try {
-            $vn = self::vn($title)->data['items']['0'];
-            $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
-            $chara = self::charactersById($vn['id'])->data['items'];
-            foreach ($chara as $character) {
-                if (!self::throwoutAppears($id, $character['vns'])) {
-                    $getChara[] = [
-                        'id'          => $character['id'],
-                        'name'        => $character['name'],
-                        'original'    => $character['original'],
-                        'gender'      => $character['gender'],
-                        'description' => $character['description'],
-                        'bloodt'      => $character['bloodt'],
-                        'image'       => $character['image'],
-                        'aliases'     => $character['aliases'],
-                        'role'        => $character['vns'][0][3],
-                    ];
-                }
-            }
-            $result = (object) [
-                'id'          => $vn['id'],
-                'producer_id' => $publisher['id'],
-                'title'       => $vn['title'],
-                'producer'    => $publisher['name'],
-                'original'    => $vn['original'],
-                'aliases'     => $vn['aliases'],
-                'released'    => $vn['released'],
-                'description' => $vn['description'],
-                'image'       => $vn['image'],
-                'image_nsfw'  => $vn['image_nsfw'],
-                'staff'       => $vn['staff'],
-                'relation'    => $vn['relations'],
-                'characters'  => $getChara,
-            ];
-        } catch (\ErrorException $e) {
-            try {
-                $vn = self::vn2nd($title)->data['items']['0'];
-                $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
-                $chara = self::charactersById($vn['id'])->data['items'];
-
-                foreach ($chara as $character) {
-                    if (!self::throwoutAppears($character['vns'], 3, 'appears')) {
-                        $getChara[] = [
-                            'id'          => $character['id'],
-                            'name'        => $character['name'],
-                            'original'    => $character['original'],
-                            'gender'      => $character['gender'],
-                            'description' => $character['description'],
-                            'bloodt'      => $character['bloodt'],
-                            'image'       => $character['image'],
-                            'aliases'     => $character['aliases'],
-                            'role'        => $character['vns'][0][3],
-                        ];
-                    }
-                }
-                $result = (object) [
-                    'id'          => $vn['id'],
-                    'producer_id' => $publisher['id'],
-                    'title'       => $vn['title'],
-                    'producer'    => $publisher['name'],
-                    'original'    => $vn['original'],
-                    'aliases'     => $vn['aliases'],
-                    'released'    => $vn['released'],
-                    'description' => $vn['description'],
-                    'image'       => $vn['image'],
-                    'image_nsfw'  => $vn['image_nsfw'],
-                    'staff'       => $vn['staff'],
-                    'relation'    => $vn['relations'],
-                    'characters'  => $chara,
-                ];
-            } catch (\ErrorException $e) {
-                return;
-            }
-        }
-
-        return $result;
     }
 
     public static function getInfobyId($id)
@@ -100,7 +19,7 @@ class VNDBRequest
         try {
             $vn = self::vnbyId($id)->data['items']['0'];
             $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
-            $result = (object) [
+            $result = (object) array(
                 'id'          => $vn['id'],
                 'producer_id' => $publisher['id'],
                 'title'       => $vn['title'],
@@ -109,12 +28,13 @@ class VNDBRequest
                 'aliases'     => $vn['aliases'],
                 'released'    => $vn['released'],
                 'description' => $vn['description'],
-                'image'       => $vn['image'],
+                'image'       => preg_replace('#^https?://#', '', $vn['image']),
                 'image_nsfw'  => $vn['image_nsfw'],
                 'relation'    => $vn['relations'],
-            ];
+                'characters' => self::getCharabyVNID($id),
+            );
         } catch (\ErrorException $e) {
-            return;
+            return 'hehe';
         }
         sleep(1);
 
@@ -124,8 +44,8 @@ class VNDBRequest
     public static function getCharabyVNID($id)
     {
         $chara = self::charactersById($id)->data['items'];
-        foreach ($chara as $character) {
-            if (!self::throwoutAppears($id, $character['vns'])) {
+        if($chara) {
+            foreach ($chara as $character) {
                 $getChara[] = [
                     'id'          => $character['id'],
                     'name'        => $character['name'],
@@ -133,14 +53,38 @@ class VNDBRequest
                     'gender'      => $character['gender'],
                     'description' => $character['description'],
                     'bloodt'      => $character['bloodt'],
-                    'image'       => $character['image'],
+                    'image'       => preg_replace('#^https?://#', '', $character['image']),
                     'aliases'     => $character['aliases'],
                     'role'        => $character['vns'][0][3],
                 ];
+
+                try {
+                    if (!self::throwoutAppears($id, $character['vns'])) {
+                        $getChara[] = [
+                            'id'          => $character['id'],
+                            'name'        => $character['name'],
+                            'original'    => $character['original'],
+                            'gender'      => $character['gender'],
+                            'description' => $character['description'],
+                            'bloodt'      => $character['bloodt'],
+                            'image'       => preg_replace('#^https?://#', '', $character['image']),
+                            'aliases'     => $character['aliases'],
+                            'role'        => $character['vns'][0][3],
+                        ];
+                    }
+                } catch(ErrorException $e) {
+                    $getChara[] = '';
+                }
             }
+        } else {
+            $getChara = [];
         }
 
         return $getChara;
+    }
+
+    public static function staffById($staff) {
+        return self::client()->sendCommand('get staff basic (id="'.$staff.'")');
     }
 
     public static function producerById($producer)
