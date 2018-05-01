@@ -11,6 +11,7 @@ class VNDBRequest
         $connect = new Client();
         $connect->connect();
         $connect->login(config('vndb.username'), config('vndb.password'));
+
         return $connect;
     }
 
@@ -19,7 +20,7 @@ class VNDBRequest
         try {
             $vn = self::vnbyId($id)->data['items']['0'];
             $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
-            $result = (object) array(
+            $result = (object) [
                 'id'          => $vn['id'],
                 'producer_id' => $publisher['id'],
                 'title'       => $vn['title'],
@@ -31,8 +32,8 @@ class VNDBRequest
                 'image'       => preg_replace('#^https?://#', '', $vn['image']),
                 'image_nsfw'  => $vn['image_nsfw'],
                 'relation'    => $vn['relations'],
-                'characters' => self::getCharabyVNID($id),
-            );
+                'characters'  => self::getCharabyVNID($id),
+            ];
         } catch (\ErrorException $e) {
             return 'hehe';
         }
@@ -44,7 +45,7 @@ class VNDBRequest
     public static function getCharabyVNID($id)
     {
         $chara = self::charactersById($id)->data['items'];
-        if($chara) {
+        if ($chara) {
             foreach ($chara as $character) {
                 $getChara[] = [
                     'id'          => $character['id'],
@@ -72,7 +73,7 @@ class VNDBRequest
                             'role'        => $character['vns'][0][3],
                         ];
                     }
-                } catch(ErrorException $e) {
+                } catch (ErrorException $e) {
                     $getChara[] = '';
                 }
             }
@@ -83,7 +84,8 @@ class VNDBRequest
         return $getChara;
     }
 
-    public static function staffById($staff) {
+    public static function staffById($staff)
+    {
         return self::client()->sendCommand('get staff basic (id="'.$staff.'")');
     }
 
