@@ -33,24 +33,59 @@ class HomeController {
 Result
 
 ```
-array:10 [▼
-  "id" => 17823
-  "producer_id" => 3312
-  "title" => "Wagamama High Spec"
-  "producer" => "Madosoft"
-  "original" => "ワガママハイスペック"
-  "aliases" => "Wagahigh"
-  "released" => "2016-02-04"
-  "description" => """
-    The story revolves around Narumi Kouki, a high school student who also draws a manga serialized in a weekly magazine. Because the manga he draws is a risqué romantic comedy, he keeps this fact a secret from everyone around him, with his younger sister Toa and his sister's best friend Mihiro being the only ones who know.\n ◀
-    \n
-    But one day, as the student council president Rokuonji Kaoruko is searching for male members for the student council, she finds out that Kouki is the manga's author. Kouki joins the student council in exchange for Kaoruko not revealing his secret. However, the vice president, Sakuragi R. Ashe, strongly opposes him joining, and in the midst of all this, various requests and troubles of students begin to pile up. \n ◀
-    \n
-    [From [url=http://www.animenewsnetwork.com/news/2015-08-14/wagamama-high-spec-adult-visual-novel-gets-tv-anime/.91657]Anime News Network[/url]]
+{array ▼
+  +"id": 22152
+  +"producer_id": 930
+  +"title": "Koi Suru Kokoro to Mahou no Kotoba"
+  +"producer": "Hearts"
+  +"original": "恋するココロと魔法のコトバ"
+  +"aliases": """
+    Koikoro\n
+    恋コロ\n
+    Heart in Love, Word of Magic
     """
-  "image" => "https://s.vndb.org/cv/96/33096.jpg"
-  "image_nsfw" => false
-]
+  +"released": "2018-05-25"
+  +"description": """
+    Narumi is a second-year student at Asanoha Gakuen. One day, he headed to the Garden Club room to return something left behind by his classmate Kazane, but he in ▶
+    \n
+    """
+  +"image": "s.vndb.org/cv/32/33932.jpg"
+  +"image_nsfw": false
+  +"relation": []
+  +"characters": array:14 [▼
+    0 => array:9 [▼
+      "id" => 65569
+      "name" => "Haru Haru"
+      "original" => "春 ハル"
+      "gender" => "f"
+      "description" => """
+        Race: High level spirit\n
+        Breast: Large\n
+        \n
+        A really energetic high-leveled spirit whose catchphrase is &quot;kiniirimashita~♪.&quot;\n
+        \n
+        Easily getting impressed. Her tears often coming out even for trivial things. An optimist character who can see a person's good side.
+        """
+      "bloodt" => null
+      "image" => "s.vndb.org/ch/87/79387.jpg"
+      "aliases" => "Haruharu"
+      "role" => "primary"
+    ]
+    2 => array:9 [▶]
+    4 => array:9 [▶]
+    6 => array:9 [▶]
+    8 => array:9 [▶]
+    10 => array:9 [▶]
+    12 => array:9 [▶]
+    14 => array:9 [▶]
+    16 => array:9 [▶]
+    18 => array:9 [▶]
+    20 => array:9 [▶]
+    22 => array:9 [▶]
+    24 => array:9 [▶]
+    26 => array:9 [▶]
+  ]
+}
 
 ```
 
