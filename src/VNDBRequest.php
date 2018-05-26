@@ -44,44 +44,56 @@ class VNDBRequest
 
     public static function getCharabyVNID($id)
     {
+
+        $pageNos = array();
         $chara = self::charactersById($id)->data['items'];
         if ($chara) {
+
+            $new_array = array();
+            $exists    = array();
+
             foreach ($chara as $character) {
-                $getChara[] = [
+                $charaArray[] = [
                     'id'          => $character['id'],
                     'name'        => $character['name'],
                     'original'    => $character['original'],
                     'gender'      => $character['gender'],
-                    'description' => $character['description'],
+                    'description' => htmlspecialchars(preg_replace('/\[.*\]/', '', $character['description'])),
                     'bloodt'      => $character['bloodt'],
                     'image'       => preg_replace('#^https?://#', '', $character['image']),
                     'aliases'     => $character['aliases'],
                     'role'        => $character['vns'][0][3],
                 ];
 
+                $showChara = self::skipRedundancy($charaArray,'id');
+
+
+
+
                 try {
                     if (!self::throwoutAppears($id, $character['vns'])) {
-                        $getChara[] = [
+                        $charaArray[] = [
                             'id'          => $character['id'],
                             'name'        => $character['name'],
                             'original'    => $character['original'],
                             'gender'      => $character['gender'],
-                            'description' => $character['description'],
+                            'description' => htmlspecialchars(preg_replace('/\[.*\]/', '', $character['description'])),
                             'bloodt'      => $character['bloodt'],
                             'image'       => preg_replace('#^https?://#', '', $character['image']),
                             'aliases'     => $character['aliases'],
                             'role'        => $character['vns'][0][3],
                         ];
+                        $showChara = self::skipRedundancy($charaArray,'id');
                     }
                 } catch (ErrorException $e) {
-                    $getChara[] = '';
+                    $showChara = [];
                 }
             }
         } else {
-            $getChara = [];
+            $showChara = [];
         }
 
-        return $getChara;
+        return $showChara;
     }
 
     public static function staffById($staff)
@@ -126,5 +138,19 @@ class VNDBRequest
                 return $key;
             }
         }
+    }
+    public static function skipRedundancy($array, $key) {
+        $temp_array = array();
+        $i = 0;
+        $key_array = array();
+
+        foreach($array as $val) {
+            if (!in_array($val[$key], $key_array)) {
+                $key_array[$i] = $val[$key];
+                $temp_array[$i] = $val;
+            }
+            $i++;
+        }
+        return $temp_array;
     }
 }
