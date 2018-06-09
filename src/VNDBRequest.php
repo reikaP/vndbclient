@@ -15,7 +15,6 @@ class VNDBRequest
         return $connect;
     }
 
-
     public static function getInfobyId($id)
     {
         try {
@@ -23,33 +22,32 @@ class VNDBRequest
 
             //Characters
             foreach ($data->characters as $character) {
-                if($character['traits']) {
-                    foreach($character['traits'] as $traits) {
+                if ($character['traits']) {
+                    foreach ($character['traits'] as $traits) {
                         $traits2[] = $traits[0];
                     }
                 } else {
                     $traits[] = null;
                 }
 
-
                 $charaArray[] = [
-                    'id' => $character['id'],
-                    'name' => $character['name'],
-                    'original' => $character['original'],
+                    'id'          => $character['id'],
+                    'name'        => $character['name'],
+                    'original'    => $character['original'],
                     'description' => htmlspecialchars(preg_replace('/\[.*\]/', '', $character['description'])),
-                    'gender' => $character['gender'],
-                    'bloodt' => $character['bloodt'],
-                    'bust' => $character['bust'],
-                    'waist' => $character['waist'],
-                    'hip' => $character['hip'],
-                    'height' => $character['height'],
-                    'weight' => $character['weight'],
-                    'image' => preg_replace('#^https?://#', '', $character['image']),
-                    'aliases' => $character['aliases'],
-                    'role' => $character['vns'][0][3],
-                    'traits' => [
+                    'gender'      => $character['gender'],
+                    'bloodt'      => $character['bloodt'],
+                    'bust'        => $character['bust'],
+                    'waist'       => $character['waist'],
+                    'hip'         => $character['hip'],
+                    'height'      => $character['height'],
+                    'weight'      => $character['weight'],
+                    'image'       => preg_replace('#^https?://#', '', $character['image']),
+                    'aliases'     => $character['aliases'],
+                    'role'        => $character['vns'][0][3],
+                    'traits'      => [
                         'item' => $traits2,
-                        'list' => $character['traits']
+                        'list' => $character['traits'],
                     ],
 
                 ];
@@ -57,39 +55,37 @@ class VNDBRequest
 
             //Visual Novel Information
 
-            if(self::skipRedundancy($charaArray,'id')) {
-                foreach(self::skipRedundancy($charaArray,'id') as $character) {
+            if (self::skipRedundancy($charaArray, 'id')) {
+                foreach (self::skipRedundancy($charaArray, 'id') as $character) {
                     $character2[] = $character['id'];
                 }
             } else {
                 $producer2[] = null;
             }
 
-
-            if($data->producers) {
-                foreach($data->producers as $producer) {
+            if ($data->producers) {
+                foreach ($data->producers as $producer) {
                     $producer2[] = $producer['id'];
                 }
             } else {
                 $producer2[] = null;
             }
 
-            if($data->vn['staff']) {
-                foreach($data->vn['staff'] as $staff) {
+            if ($data->vn['staff']) {
+                foreach ($data->vn['staff'] as $staff) {
                     $staff2[] = $staff['aid'];
                 }
             } else {
                 $staff2[] = null;
             }
 
-            if($data->vn['tags']) {
-                foreach($data->vn['tags'] as $tags) {
+            if ($data->vn['tags']) {
+                foreach ($data->vn['tags'] as $tags) {
                     $tags2[] = $tags[0];
                 }
             } else {
                 $tags2[] = null;
             }
-
 
             $result = (object) [
                 'id'          => $data->vn['id'],
@@ -97,58 +93,55 @@ class VNDBRequest
                 'original'    => $data->vn['original'],
                 'aliases'     => $data->vn['aliases'],
 
-                'released'    => $data->vn['released'],
-                'description' => $data->vn['description'],
-                'image'       => preg_replace('#^https?://#', '', $data->vn['image']),
-                'image_nsfw'  => $data->vn['image_nsfw'],
-                'relation'    => $data->vn['relations'],
+                'released'         => $data->vn['released'],
+                'description'      => $data->vn['description'],
+                'image'            => preg_replace('#^https?://#', '', $data->vn['image']),
+                'image_nsfw'       => $data->vn['image_nsfw'],
+                'relation'         => $data->vn['relations'],
                 'characters'       => [
-                    'item'  => implode(",", $character2),
-                    'list'  => self::skipRedundancy($charaArray,'id')
+                    'item'  => implode(',', $character2),
+                    'list'  => self::skipRedundancy($charaArray, 'id'),
                 ],
                 'staff'       => [
-                    'item'  => implode(",", $staff2),
-                    'list'  => $data->vn['staff']
+                    'item'  => implode(',', $staff2),
+                    'list'  => $data->vn['staff'],
                 ],
                 'tags'       => [
-                    'item'  => implode(",", $tags2),
-                    'list'  => $data->vn['tags']
+                    'item'  => implode(',', $tags2),
+                    'list'  => $data->vn['tags'],
                 ],
                 'producers'       => [
-                    'item'  => implode(",", $producer2),
-                    'list'  => $data->producers
+                    'item'  => implode(',', $producer2),
+                    'list'  => $data->producers,
                 ],
 
             ];
 
-
             return $result;
         } catch (\ErrorException $e) {
-            echo "Error or api request reached";
+            echo 'Error or api request reached';
         }
         sleep(1);
-
     }
-    
-    public static function pipelining($id) {
+
+    public static function pipelining($id)
+    {
         $connect = new Client();
         $connect->connect();
         $connect->login(config('vndb.username'), config('vndb.password'));
 
-
-        $result = (object) array(
+        $result = (object) [
             'characters'    => $connect->sendCommand('get character basic,details,voiced,vns,meas,traits (vn="'.$id.'") {"results":25}')->data['items'],
             'vn'            => $connect->sendCommand('get vn basic,details,relations,staff,tags (id="'.$id.'")')->data['items'][0],
             'producers'     => $connect->sendCommand('get release producers (vn="'.$id.'")')->data['items'][0]['producers'],
-            'staff'         => $connect->sendCommand('get staff basic (id="'.$id.'")')->data['items']
-        );
+            'staff'         => $connect->sendCommand('get staff basic (id="'.$id.'")')->data['items'],
+        ];
 
         $connect->isConnected();
+
         return $result;
-
-
     }
-    
+
     public static function throwoutAppears($id, $array)
     {
         foreach ($array as $key => $val) {
@@ -157,18 +150,21 @@ class VNDBRequest
             }
         }
     }
-    public static function skipRedundancy($array, $key) {
-        $temp_array = array();
-        $i = 0;
-        $key_array = array();
 
-        foreach($array as $val) {
+    public static function skipRedundancy($array, $key)
+    {
+        $temp_array = [];
+        $i = 0;
+        $key_array = [];
+
+        foreach ($array as $val) {
             if (!in_array($val[$key], $key_array)) {
                 $key_array[$i] = $val[$key];
                 $temp_array[$i] = $val;
             }
             $i++;
         }
+
         return $temp_array;
     }
 }
