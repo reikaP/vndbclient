@@ -15,122 +15,140 @@ class VNDBRequest
         return $connect;
     }
 
+
     public static function getInfobyId($id)
     {
         try {
-            $vn = self::vnbyId($id)->data['items']['0'];
-            $publisher = self::producerById($vn['id'])->data['items']['0']['producers']['0'];
+            $data = self::pipelining($id);
+
+            //Characters
+            foreach ($data->characters as $character) {
+                if($character['traits']) {
+                    foreach($character['traits'] as $traits) {
+                        $traits2[] = $traits[0];
+                    }
+                } else {
+                    $traits[] = null;
+                }
+
+
+                $charaArray[] = [
+                    'id' => $character['id'],
+                    'name' => $character['name'],
+                    'original' => $character['original'],
+                    'description' => htmlspecialchars(preg_replace('/\[.*\]/', '', $character['description'])),
+                    'gender' => $character['gender'],
+                    'bloodt' => $character['bloodt'],
+                    'bust' => $character['bust'],
+                    'waist' => $character['waist'],
+                    'hip' => $character['hip'],
+                    'height' => $character['height'],
+                    'weight' => $character['weight'],
+                    'image' => preg_replace('#^https?://#', '', $character['image']),
+                    'aliases' => $character['aliases'],
+                    'role' => $character['vns'][0][3],
+                    'traits' => [
+                        'item' => $traits2,
+                        'list' => $character['traits']
+                    ],
+
+                ];
+            }
+
+            //Visual Novel Information
+
+            if(self::skipRedundancy($charaArray,'id')) {
+                foreach(self::skipRedundancy($charaArray,'id') as $character) {
+                    $character2[] = $character['id'];
+                }
+            } else {
+                $producer2[] = null;
+            }
+
+
+            if($data->producers) {
+                foreach($data->producers as $producer) {
+                    $producer2[] = $producer['id'];
+                }
+            } else {
+                $producer2[] = null;
+            }
+
+            if($data->vn['staff']) {
+                foreach($data->vn['staff'] as $staff) {
+                    $staff2[] = $staff['aid'];
+                }
+            } else {
+                $staff2[] = null;
+            }
+
+            if($data->vn['tags']) {
+                foreach($data->vn['tags'] as $tags) {
+                    $tags2[] = $tags[0];
+                }
+            } else {
+                $tags2[] = null;
+            }
+
+
             $result = (object) [
-                'id'          => $vn['id'],
-                'producer_id' => $publisher['id'],
-                'title'       => $vn['title'],
-                'producer'    => $publisher['name'],
-                'original'    => $vn['original'],
-                'aliases'     => $vn['aliases'],
-                'released'    => $vn['released'],
-                'description' => $vn['description'],
-                'image'       => preg_replace('#^https?://#', '', $vn['image']),
-                'image_nsfw'  => $vn['image_nsfw'],
-                'relation'    => $vn['relations'],
-                'characters'  => self::getCharabyVNID($id),
+                'id'          => $data->vn['id'],
+                'title'       => $data->vn['title'],
+                'original'    => $data->vn['original'],
+                'aliases'     => $data->vn['aliases'],
+
+                'released'    => $data->vn['released'],
+                'description' => $data->vn['description'],
+                'image'       => preg_replace('#^https?://#', '', $data->vn['image']),
+                'image_nsfw'  => $data->vn['image_nsfw'],
+                'relation'    => $data->vn['relations'],
+                'characters'       => [
+                    'item'  => implode(",", $character2),
+                    'list'  => self::skipRedundancy($charaArray,'id')
+                ],
+                'staff'       => [
+                    'item'  => implode(",", $staff2),
+                    'list'  => $data->vn['staff']
+                ],
+                'tags'       => [
+                    'item'  => implode(",", $tags2),
+                    'list'  => $data->vn['tags']
+                ],
+                'producers'       => [
+                    'item'  => implode(",", $producer2),
+                    'list'  => $data->producers
+                ],
+
             ];
+
+
+            return $result;
         } catch (\ErrorException $e) {
-            return 'hehe';
+            echo "Error or api request reached";
         }
         sleep(1);
 
+    }
+    
+    public static function pipelining($id) {
+        $connect = new Client();
+        $connect->connect();
+        $connect->login(config('vndb.username'), config('vndb.password'));
+
+
+        $result = (object) array(
+            'characters'    => $connect->sendCommand('get character basic,details,voiced,vns,meas,traits (vn="'.$id.'") {"results":25}')->data['items'],
+            'vn'            => $connect->sendCommand('get vn basic,details,relations,staff,tags (id="'.$id.'")')->data['items'][0],
+            'producers'     => $connect->sendCommand('get release producers (vn="'.$id.'")')->data['items'][0]['producers'],
+            'staff'         => $connect->sendCommand('get staff basic (id="'.$id.'")')->data['items']
+        );
+
+        $connect->isConnected();
         return $result;
+
+
     }
-
-    public static function getCharabyVNID($id)
-    {
-
-        $pageNos = array();
-        $chara = self::charactersById($id)->data['items'];
-        if ($chara) {
-
-            $new_array = array();
-            $exists    = array();
-
-            foreach ($chara as $character) {
-                $charaArray[] = [
-                    'id'          => $character['id'],
-                    'name'        => $character['name'],
-                    'original'    => $character['original'],
-                    'gender'      => $character['gender'],
-                    'description' => htmlspecialchars(preg_replace('/\[.*\]/', '', $character['description'])),
-                    'bloodt'      => $character['bloodt'],
-                    'image'       => preg_replace('#^https?://#', '', $character['image']),
-                    'aliases'     => $character['aliases'],
-                    'role'        => $character['vns'][0][3],
-                ];
-
-                $showChara = self::skipRedundancy($charaArray,'id');
-
-
-
-
-                try {
-                    if (!self::throwoutAppears($id, $character['vns'])) {
-                        $charaArray[] = [
-                            'id'          => $character['id'],
-                            'name'        => $character['name'],
-                            'original'    => $character['original'],
-                            'gender'      => $character['gender'],
-                            'description' => htmlspecialchars(preg_replace('/\[.*\]/', '', $character['description'])),
-                            'bloodt'      => $character['bloodt'],
-                            'image'       => preg_replace('#^https?://#', '', $character['image']),
-                            'aliases'     => $character['aliases'],
-                            'role'        => $character['vns'][0][3],
-                        ];
-                        $showChara = self::skipRedundancy($charaArray,'id');
-                    }
-                } catch (ErrorException $e) {
-                    $showChara = [];
-                }
-            }
-        } else {
-            $showChara = [];
-        }
-
-        return $showChara;
-    }
-
-    public static function staffById($staff)
-    {
-        return self::client()->sendCommand('get staff basic (id="'.$staff.'")');
-    }
-
-    public static function producerById($producer)
-    {
-        return self::client()->sendCommand('get release producers (vn="'.$producer.'")');
-    }
-
-    public static function charactersById($character)
-    {
-        return self::client()->sendCommand('get character basic,details,voiced,vns (vn="'.$character.'") {"results":25}');
-    }
-
-    public static function vn($title)
-    {
-        return self::client()->sendCommand('get vn basic,details,staff,relations (title="'.$title.'")');
-    }
-
-    public static function vn2nd($title)
-    {
-        return self::client()->sendCommand('get vn basic,details,staff,relations (search~"'.$title.'")');
-    }
-
-    public static function vnbyId($id)
-    {
-        return self::client()->sendCommand('get vn basic,details,relations (id="'.$id.'")');
-    }
-
-    public static function command($command)
-    {
-        return self::client()->sendCommand($command);
-    }
-
+    
     public static function throwoutAppears($id, $array)
     {
         foreach ($array as $key => $val) {
