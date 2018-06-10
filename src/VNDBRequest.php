@@ -12,36 +12,40 @@ class VNDBRequest
             $data = self::pipelining($id);
 
             //Characters
-            foreach ($data->characters as $character) {
-                if ($character['traits']) {
-                    foreach ($character['traits'] as $traits) {
-                        $traits2[] = $traits[0];
+            if(!$data->characters->data['num'] == 0) {
+                foreach ($data->characters->data['items'] as $character) {
+                    if ($character['traits']) {
+                        foreach ($character['traits'] as $traits) {
+                            $traits2[] = $traits[0];
+                        }
+                    } else {
+                        $traits[] = null;
                     }
-                } else {
-                    $traits[] = null;
+
+                    $charaArray[] = [
+                        'id' => $character['id'],
+                        'name' => $character['name'],
+                        'original' => $character['original'],
+                        'description' => htmlspecialchars(preg_replace('/\[.*\]/', '', $character['description'])),
+                        'gender' => $character['gender'],
+                        'bloodt' => $character['bloodt'],
+                        'bust' => $character['bust'],
+                        'waist' => $character['waist'],
+                        'hip' => $character['hip'],
+                        'height' => $character['height'],
+                        'weight' => $character['weight'],
+                        'image' => preg_replace('#^https?://#', '', $character['image']),
+                        'aliases' => $character['aliases'],
+                        'role' => $character['vns'][0][3],
+                        'traits' => [
+                            'item' => $traits2,
+                            'list' => $character['traits'],
+                        ],
+
+                    ];
                 }
-
-                $charaArray[] = [
-                    'id'          => $character['id'],
-                    'name'        => $character['name'],
-                    'original'    => $character['original'],
-                    'description' => htmlspecialchars(preg_replace('/\[.*\]/', '', $character['description'])),
-                    'gender'      => $character['gender'],
-                    'bloodt'      => $character['bloodt'],
-                    'bust'        => $character['bust'],
-                    'waist'       => $character['waist'],
-                    'hip'         => $character['hip'],
-                    'height'      => $character['height'],
-                    'weight'      => $character['weight'],
-                    'image'       => preg_replace('#^https?://#', '', $character['image']),
-                    'aliases'     => $character['aliases'],
-                    'role'        => $character['vns'][0][3],
-                    'traits'      => [
-                        'item' => $traits2,
-                        'list' => $character['traits'],
-                    ],
-
-                ];
+            } else {
+                $charaArray[] = null;
             }
 
             //Visual Novel Information
@@ -51,7 +55,7 @@ class VNDBRequest
                     $character2[] = $character['id'];
                 }
             } else {
-                $producer2[] = null;
+                $producer2 = null;
             }
 
             if ($data->producers) {
@@ -122,7 +126,7 @@ class VNDBRequest
         $connect->login(config('vndb.username'), config('vndb.password'));
 
         $result = (object) [
-            'characters'    => $connect->sendCommand('get character basic,details,voiced,vns,meas,traits (vn="'.$id.'") {"results":25}')->data['items'],
+            'characters'    => $connect->sendCommand('get character basic,details,voiced,vns,meas,traits (vn="'.$id.'") {"results":25}'),
             'vn'            => $connect->sendCommand('get vn basic,details,relations,staff,tags (id="'.$id.'")')->data['items'][0],
             'producers'     => $connect->sendCommand('get release producers (vn="'.$id.'")')->data['items'][0]['producers'],
             'staff'         => $connect->sendCommand('get staff basic (id="'.$id.'")')->data['items'],
@@ -131,6 +135,19 @@ class VNDBRequest
         $connect->isConnected();
 
         return $result;
+    }
+
+    public static function test($id) {
+        $connect = new Client();
+        $connect->connect();
+        $connect->login(config('vndb.username'), config('vndb.password'));
+
+        $test = $connect->sendCommand('get character basic,details,voiced,vns,meas,traits (vn="'.$id.'") {"results":25}');
+
+
+        $connect->isConnected();
+        return $test;
+
     }
 
     public static function throwoutAppears($id, $array)
