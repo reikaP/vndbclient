@@ -8,7 +8,7 @@
 
 return [
 
-    'username' => '',
-    'password' => '',
+    'username' => env('VNDB_USERNAME'),
+    'password' => env('VNDB_PASSWORD'),
 
 ];
