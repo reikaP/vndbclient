@@ -14,14 +14,6 @@ class VNDBRequest
             //Characters
             if(!$data->characters->data['num'] == 0) {
                 foreach ($data->characters->data['items'] as $character) {
-                    if ($character['traits']) {
-                        foreach ($character['traits'] as $traits) {
-                            $traits2[] = $traits[0];
-                        }
-                    } else {
-                        $traits[] = null;
-                    }
-
                     $charaArray[] = [
                         'id' => $character['id'],
                         'name' => $character['name'],
@@ -38,7 +30,6 @@ class VNDBRequest
                         'aliases' => $character['aliases'],
                         'role' => $character['vns'][0][3],
                         'traits' => [
-                            'item' => $traits2,
                             'list' => $character['traits'],
                         ],
 
@@ -114,7 +105,7 @@ class VNDBRequest
 
             return $result;
         } catch (\ErrorException $e) {
-            echo 'Error or api request reached';
+            echo 'Error or api request reached '. $e->getMessage();
         }
         sleep(1);
     }
