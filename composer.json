@@ -3,7 +3,7 @@
     "description": "VNDB PHP Client for Laravel",
     "type": "library",
     "require": {
-        "symfony/console": "4.0.*"
+        "symfony/console": "4.1.*"
     },
     "license": "MIT",
     "autoload": {
