@@ -108,6 +108,7 @@ class VNDBRequest
             echo 'Error or api request reached '. $e->getMessage();
         }
         sleep(1);
+        exit();
     }
 
     public static function pipelining($id)
@@ -121,27 +122,24 @@ class VNDBRequest
             'vn'            => $connect->sendCommand('get vn basic,details,relations,staff,tags (id="'.$id.'")')->data['items'][0],
             'producers'     => $connect->sendCommand('get release producers (vn="'.$id.'")')->data['items'][0]['producers'],
             'staff'         => $connect->sendCommand('get staff basic (id="'.$id.'")')->data['items'],
+
         ];
-
-        $connect->isConnected();
-
+        
         return $result;
     }
 
-    public static function test($id) {
+
+    private static function test($id) {
         $connect = new Client();
         $connect->connect();
         $connect->login(config('vndb.username'), config('vndb.password'));
-
         $test = $connect->sendCommand('get character basic,details,voiced,vns,meas,traits (vn="'.$id.'") {"results":25}');
-
-
         $connect->isConnected();
         return $test;
 
     }
 
-    public static function throwoutAppears($id, $array)
+    private static function throwoutAppears($id, $array)
     {
         foreach ($array as $key => $val) {
             if ($val['0'] === $id) {
@@ -150,7 +148,7 @@ class VNDBRequest
         }
     }
 
-    public static function skipRedundancy($array, $key)
+    private static function skipRedundancy($array, $key)
     {
         $temp_array = [];
         $i = 0;
