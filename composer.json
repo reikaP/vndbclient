@@ -1,5 +1,5 @@
 {
-    "name": "shikakunhq/vndbclient",
+    "name": "reikap/vndbclient",
     "description": "VNDB PHP Client for Laravel",
     "type": "library",
     "require": {
