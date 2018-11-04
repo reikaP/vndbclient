@@ -1,4 +1,5 @@
 <?php
+
 namespace Shikakunhq\VNDBClient;
 
 use Shikakunhq\VNDBClient\lib\Client;
@@ -8,6 +9,7 @@ class VNDBRequest
     public static function getInfobyId($id)
     {
         try {
+            unset($result);
             $data = self::pipelining($id);
 
             //Characters
@@ -103,7 +105,6 @@ class VNDBRequest
             ];
 
             return $result;
-            unset($result);
         } catch (\ErrorException $e) {
             echo 'Error or api request reached '. $e->getMessage();
         }
@@ -142,7 +143,7 @@ class VNDBRequest
         $connect->connect();
         $connect->login(config('vndb.username'), config('vndb.password'));
         $test = $connect->sendCommand('get character basic,details,voiced,vns,meas,traits (vn="'.$id.'") {"results":25}');
-        $connect->isConnected();
+     
         return $test;
 
     }
