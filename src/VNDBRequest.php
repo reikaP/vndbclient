@@ -8,7 +8,6 @@ class VNDBRequest
 {
     public static function getInfobyId($id)
     {
-        unset($result);
         try {
             $data = self::pipelining($id);
 
@@ -105,6 +104,7 @@ class VNDBRequest
             ];
 
             return $result;
+            unset($result);
         } catch (\ErrorException $e) {
             echo 'Error or api request reached '. $e->getMessage();
         }
