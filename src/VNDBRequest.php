@@ -9,7 +9,7 @@ class VNDBRequest
     public static function getInfobyId($id)
     {
         try {
-            unset($result);
+            ob_start();
             $data = self::pipelining($id);
 
             //Characters
@@ -105,10 +105,16 @@ class VNDBRequest
             ];
 
             return $result;
+            clearstatcache();
+            unset($result);
+            exit();
+
         } catch (\ErrorException $e) {
             echo 'Error or api request reached '. $e->getMessage();
         }
         sleep(1);
+        clearstatcache();
+        unset($result);
         exit();
     }
 
@@ -143,7 +149,7 @@ class VNDBRequest
         $connect->connect();
         $connect->login(config('vndb.username'), config('vndb.password'));
         $test = $connect->sendCommand('get character basic,details,voiced,vns,meas,traits (vn="'.$id.'") {"results":25}');
-     
+        $connect->isConnected();
         return $test;
 
     }
