@@ -7,7 +7,7 @@ use Shikakunhq\VNDBClient\lib\Client;
 class VNDBRequest
 {
     public static function getInfobyId($id)
-    {   
+    {
         unset($result);
         try {
             $data = self::pipelining($id);
@@ -109,7 +109,6 @@ class VNDBRequest
             echo 'Error or api request reached '. $e->getMessage();
         }
         sleep(1);
-        unset($result);
         exit();
     }
 
