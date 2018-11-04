@@ -1,5 +1,4 @@
 <?php
-
 namespace Shikakunhq\VNDBClient;
 
 use Shikakunhq\VNDBClient\lib\Client;
