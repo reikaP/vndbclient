@@ -75,58 +75,53 @@ class VNDBRequest
             }
 
             $result = (object) [
-                'id'          => $data->vn['id'],
-                'title'       => $data->vn['title'],
-                'original'    => $data->vn['original'],
-                'aliases'     => $data->vn['aliases'],
+                'status' => 'ok',
+                'data' => (object) array(
+                    'id'          => $data->vn['id'],
+                    'title'       => $data->vn['title'],
+                    'original'    => $data->vn['original'],
+                    'aliases'     => $data->vn['aliases'],
 
-                'released'         => $data->vn['released'],
-                'description'      => $data->vn['description'],
-                'image'            => preg_replace('#^https?://#', '', $data->vn['image']),
-                'image_nsfw'       => $data->vn['image_nsfw'],
-                'relation'         => $data->vn['relations'],
-                'characters'       => [
-                    'item'  => implode(',', $character2),
-                    'list'  => self::skipRedundancy($charaArray, 'id'),
-                ],
-                'staff'       => [
-                    'item'  => implode(',', $staff2),
-                    'list'  => $data->vn['staff'],
-                ],
-                'tags'       => [
-                    'item'  => implode(',', $tags2),
-                    'list'  => $data->vn['tags'],
-                ],
-                'producers'       => [
-                    'item'  => implode(',', $producer2),
-                    'list'  => $data->producers,
-                ],
+                    'released'         => $data->vn['released'],
+                    'description'      => $data->vn['description'],
+                    'image'            => preg_replace('#^https?://#', '', $data->vn['image']),
+                    'image_nsfw'       => $data->vn['image_nsfw'],
+                    'relation'         => $data->vn['relations'],
+                    'characters'       => [
+                        'item'  => implode(',', $character2),
+                        'list'  => self::skipRedundancy($charaArray, 'id'),
+                    ],
+                    'staff'       => [
+                        'item'  => implode(',', $staff2),
+                        'list'  => $data->vn['staff'],
+                    ],
+                    'tags'       => [
+                        'item'  => implode(',', $tags2),
+                        'list'  => $data->vn['tags'],
+                    ],
+                    'producers'       => [
+                        'item'  => implode(',', $producer2),
+                        'list'  => $data->producers,
+                    ],
+                )
 
             ];
 
             return $result;
             clearstatcache();
             unset($result);
-            $vars = array_keys(get_defined_vars());
-foreach($vars as $var) {
-    unset(${"$var"});
-}
             exit();
 
         } catch (\ErrorException $e) {
-            echo 'Error or api request reached '. $e->getMessage();
+            return array(
+              'status' => 'error',
+              'message' => 'Limit request reached '. $e->getMessage(),
+            );
+
             clearstatcache();
             unset($result);
-            $vars = array_keys(get_defined_vars());
-foreach($vars as $var) {
-    unset(${"$var"});
-}
             exit();
         }
-       $vars = array_keys(get_defined_vars());
-foreach($vars as $var) {
-    unset(${"$var"});
-}
         clearstatcache();
         unset($result);
         exit();
