@@ -7,7 +7,8 @@ use Shikakunhq\VNDBClient\lib\Client;
 class VNDBRequest
 {
     public static function getInfobyId($id)
-    {
+    {   
+        unset($result);
         try {
             $data = self::pipelining($id);
 
@@ -107,6 +108,7 @@ class VNDBRequest
         } catch (\ErrorException $e) {
             echo 'Error or api request reached '. $e->getMessage();
         }
+        sleep(1);
         unset($result);
         exit();
     }
@@ -124,8 +126,16 @@ class VNDBRequest
             'staff'         => $connect->sendCommand('get staff basic (id="'.$id.'")')->data['items'],
 
         ];
-        
+
         return $result;
+    }
+
+    public static function importData() {
+        $connect = new Client();
+        $connect->connect();
+        $connect->login(config('vndb.username'), config('vndb.password'));
+
+        return (object) $connect->sendCommand('get vnlist basic (uid="37836")');
     }
 
 
