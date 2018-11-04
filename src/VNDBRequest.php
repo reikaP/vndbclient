@@ -111,8 +111,10 @@ class VNDBRequest
 
         } catch (\ErrorException $e) {
             echo 'Error or api request reached '. $e->getMessage();
+            clearstatcache();
+            unset($result);
+            exit();
         }
-        sleep(1);
         clearstatcache();
         unset($result);
         exit();
