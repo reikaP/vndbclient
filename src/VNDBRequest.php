@@ -115,6 +115,11 @@ class VNDBRequest
             unset($result);
             exit();
         }
+        $vars = array_keys(get_defined_vars());
+        for ($i = 0; $i < sizeOf($vars); $i++) {
+            unset($$vars[$i]);
+        }
+        unset($vars,$i);
         clearstatcache();
         unset($result);
         exit();
