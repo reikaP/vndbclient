@@ -107,18 +107,26 @@ class VNDBRequest
             return $result;
             clearstatcache();
             unset($result);
+            $vars = array_keys(get_defined_vars());
+foreach($vars as $var) {
+    unset(${"$var"});
+}
             exit();
 
         } catch (\ErrorException $e) {
             echo 'Error or api request reached '. $e->getMessage();
             clearstatcache();
             unset($result);
+            $vars = array_keys(get_defined_vars());
+foreach($vars as $var) {
+    unset(${"$var"});
+}
             exit();
         }
-        $vars = array_keys(get_defined_vars());
-        foreach($vars as $var) {
-            unset(${"$var"});
-        }
+       $vars = array_keys(get_defined_vars());
+foreach($vars as $var) {
+    unset(${"$var"});
+}
         clearstatcache();
         unset($result);
         exit();
