@@ -118,12 +118,9 @@ class VNDBRequest
               'message' => 'Limit request reached '. $e->getMessage(),
             );
 
-            clearstatcache();
-            unset($result);
             exit();
         }
-        clearstatcache();
-        unset($result);
+
         exit();
     }
 
@@ -140,6 +137,7 @@ class VNDBRequest
             'staff'         => $connect->sendCommand('get staff basic (id="'.$id.'")')->data['items'],
 
         ];
+        $connect->isConnected();
 
         return $result;
     }
