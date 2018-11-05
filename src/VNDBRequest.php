@@ -113,7 +113,7 @@ class VNDBRequest
             exit();
 
         } catch (\ErrorException $e) {
-            return array(
+            return (object) array(
               'status' => 'error',
               'message' => 'Limit request reached '. $e->getMessage(),
             );
