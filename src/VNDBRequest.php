@@ -9,7 +9,6 @@ class VNDBRequest
     public static function getInfobyId($id)
     {
         try {
-            ob_start();
             $data = self::pipelining($id);
 
             //Characters
@@ -29,7 +28,7 @@ class VNDBRequest
                         'weight' => $character['weight'],
                         'image' => preg_replace('#^https?://#', '', $character['image']),
                         'aliases' => $character['aliases'],
-                        'role' => $character['vns'][0][3],
+                        'role' => $character['vns'][array_search($id, array_column($character['vns'], 0))][3],
                         'traits' => [
                             'list' => $character['traits'],
                         ],
@@ -108,19 +107,15 @@ class VNDBRequest
             ];
 
             return $result;
-            clearstatcache();
-            unset($result);
-            exit();
 
         } catch (\ErrorException $e) {
             return (object) array(
               'status' => 'error',
               'message' => 'Limit request reached '. $e->getMessage(),
             );
-
             exit();
         }
-
+        clearstatcache();
         exit();
     }
 
@@ -149,27 +144,7 @@ class VNDBRequest
 
         return (object) $connect->sendCommand('get vnlist basic (uid="37836")');
     }
-
-
-    private static function test($id) {
-        $connect = new Client();
-        $connect->connect();
-        $connect->login(config('vndb.username'), config('vndb.password'));
-        $test = $connect->sendCommand('get character basic,details,voiced,vns,meas,traits (vn="'.$id.'") {"results":25}');
-        $connect->isConnected();
-        return $test;
-
-    }
-
-    private static function throwoutAppears($id, $array)
-    {
-        foreach ($array as $key => $val) {
-            if ($val['0'] === $id) {
-                return $key;
-            }
-        }
-    }
-
+    
     private static function skipRedundancy($array, $key)
     {
         $temp_array = [];
