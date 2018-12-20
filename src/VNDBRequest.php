@@ -98,7 +98,7 @@ class VNDBRequest
                         'item'  => implode(',', $tags2),
                         'list'  => $data->vn['tags'],
                     ],
-                    'producers'       => [
+                    'developers'       => [
                         'item'  => implode(',', $producer2),
                         'list'  => $data->producers,
                     ],
@@ -144,7 +144,7 @@ class VNDBRequest
 
         return (object) $connect->sendCommand('get vnlist basic (uid="37836")');
     }
-    
+
     private static function skipRedundancy($array, $key)
     {
         $temp_array = [];
